@@ -46,7 +46,7 @@
         android:id="@+id/loginBtnNavHeader"
         android:layout_width="wrap_content"
         android:layout_height="32dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="4dp"
         android:layout_marginBottom="4dp"
         android:background="@android:color/transparent"
         android:onClick="loginBtnNavClicked"
