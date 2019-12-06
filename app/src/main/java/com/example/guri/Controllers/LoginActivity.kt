@@ -1,9 +1,10 @@
-package com.example.guri
+package com.example.guri.Controllers
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.example.guri.R
 
 class LoginActivity : AppCompatActivity() {
 
@@ -17,7 +18,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun loginCreateUserBtnClicked(view: View){
-        val createUserIntent = Intent(this,CreateUserActivity::class.java)
+        val createUserIntent = Intent(this, CreateUserActivity::class.java)
         startActivity(createUserIntent)
     }
 }

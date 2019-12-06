@@ -1,9 +1,11 @@
-package com.example.guri
+package com.example.guri.Controllers
 
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.example.guri.R
+import com.example.guri.Services.AuthService
 import kotlinx.android.synthetic.main.activity_create_user.*
 import java.util.*
 
@@ -33,7 +35,9 @@ class CreateUserActivity : AppCompatActivity() {
     }
 
     fun createUserClicked(view: View){
+        AuthService.registerUser(this,"hla@gmail.com","123456"){
 
+        }
     }
 
     fun generateColorClicked(view: View){
