@@ -6,7 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Bundle
-import android.service.autofill.UserData
+import android.view.LayoutInflater
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -17,6 +17,9 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.guri.R
 import com.example.guri.Services.AuthService
@@ -51,6 +54,8 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        hideKeyboard()
 
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver,
             IntentFilter(BROADCAST_USER_DATA_CHANGE)
@@ -92,10 +97,39 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addChannelBtnClicked(view: View){
+        if(AuthService.isLoggedIn){
+            val builder = AlertDialog.Builder(this)
+            val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog,null)
 
+            builder.setView(dialogView)
+                .setPositiveButton("Add"){ dialogInterface, i ->
+                    //perform when clicked
+                    val nameTextField = dialogView.findViewById<EditText>(R.id.addChannelNameText)
+                    val descTextField = dialogView.findViewById<EditText>(R.id.addChannelDescText)
+                    val channelName = nameTextField.text.toString()
+                    val channelDesc = descTextField.text.toString()
+
+                    // Create channel with the channel name and description
+                    hideKeyboard()
+
+                }
+                .setNegativeButton("Cancel") {dialogInterface, i ->
+                    // close dialog code
+                    hideKeyboard()
+                }
+                .show()
+        }
     }
 
     fun sendMessageBtnClicked(view: View){
 
+    }
+
+    fun hideKeyboard() {
+        val inputManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        if (inputManager.isAcceptingText) {
+            inputManager.hideSoftInputFromWindow(currentFocus?.windowToken,0)
+        }
     }
 }

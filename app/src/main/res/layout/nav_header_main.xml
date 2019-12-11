@@ -28,7 +28,6 @@
         android:layout_marginStart="15dp"
         android:fontFamily="sans-serif-black"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="Yuuma"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintStart_toEndOf="@+id/userImageNavHeader"
         app:layout_constraintTop_toTopOf="@+id/userImageNavHeader" />
@@ -38,7 +37,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:text="gigas japan"
         app:layout_constraintStart_toEndOf="@+id/userImageNavHeader"
         app:layout_constraintTop_toBottomOf="@+id/userNameNavHeader" />
 
