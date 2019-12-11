@@ -25,9 +25,13 @@ import com.example.guri.R
 import com.example.guri.Services.AuthService
 import com.example.guri.Services.UserDataService
 import com.example.guri.Utilities.BROADCAST_USER_DATA_CHANGE
+import com.example.guri.Utilities.SOCKET_URL
+import io.socket.client.IO
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    val socket = IO.socket(SOCKET_URL)
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
@@ -55,11 +59,24 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        hideKeyboard()
-
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver,
             IntentFilter(BROADCAST_USER_DATA_CHANGE)
         )
+    }
+
+    override fun onResume() {
+        socket.connect()
+        super.onResume()
+    }
+
+//    override fun onPause() {
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
+//        super.onPause()
+//    }
+
+    override fun onDestroy() {
+        socket.disconnect()
+        super.onDestroy()
     }
 
     private val userDataChangeReceiver = object : BroadcastReceiver(){
@@ -110,18 +127,18 @@ class MainActivity : AppCompatActivity() {
                     val channelDesc = descTextField.text.toString()
 
                     // Create channel with the channel name and description
-                    hideKeyboard()
+                    socket.emit("newChannel",channelName, channelDesc)
 
                 }
                 .setNegativeButton("Cancel") {dialogInterface, i ->
                     // close dialog code
-                    hideKeyboard()
                 }
                 .show()
         }
     }
 
     fun sendMessageBtnClicked(view: View){
+        hideKeyboard()
 
     }
 
