@@ -21,12 +21,15 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.guri.Model.Channel
 import com.example.guri.R
 import com.example.guri.Services.AuthService
+import com.example.guri.Services.MessageService
 import com.example.guri.Services.UserDataService
 import com.example.guri.Utilities.BROADCAST_USER_DATA_CHANGE
 import com.example.guri.Utilities.SOCKET_URL
 import io.socket.client.IO
+import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -59,23 +62,21 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver,
-            IntentFilter(BROADCAST_USER_DATA_CHANGE)
-        )
+        socket.connect()
+        socket.on("channelCreated",onNewChannel)
     }
 
     override fun onResume() {
-        socket.connect()
+        LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver,
+            IntentFilter(BROADCAST_USER_DATA_CHANGE)
+        )
+
         super.onResume()
     }
 
-//    override fun onPause() {
-//        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
-//        super.onPause()
-//    }
-
     override fun onDestroy() {
         socket.disconnect()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
         super.onDestroy()
     }
 
@@ -134,6 +135,20 @@ class MainActivity : AppCompatActivity() {
                     // close dialog code
                 }
                 .show()
+        }
+    }
+
+    private val onNewChannel = Emitter.Listener { args ->
+        runOnUiThread {
+            val channelName = args[0] as String
+            val channelDescription = args[1] as String
+            val channelId =  args[2] as String
+
+            val newChannel = Channel(channelName, channelDescription, channelId)
+            MessageService.channels.add(newChannel)
+            println(newChannel.name)
+            println(newChannel.description)
+            println(newChannel.id)
         }
     }
 
