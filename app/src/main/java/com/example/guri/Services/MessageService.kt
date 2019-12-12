@@ -7,12 +7,14 @@ import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import com.example.guri.Controllers.App
 import com.example.guri.Model.Channel
+import com.example.guri.Model.Message
 import com.example.guri.Utilities.URL_GET_CHANNELS
 import org.json.JSONException
 
 object MessageService {
 
     val channels = ArrayList<Channel>()
+    val messages = ArrayList<Message>()
 
     fun getChannels(complete: (Boolean) -> Unit){
 
