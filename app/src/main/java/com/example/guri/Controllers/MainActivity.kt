@@ -23,6 +23,8 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.GravityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.guri.Adapter.MessageAdapter
 import com.example.guri.Model.Channel
 import com.example.guri.Model.Message
 import com.example.guri.R
@@ -43,11 +45,19 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var channelAdapter: ArrayAdapter<Channel>
 
+    lateinit var messageAdapater: MessageAdapter
+
     var selectedChannel : Channel ?= null
+
 
     private fun setupAdapater(){
         channelAdapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,MessageService.channels)
         channel_list.adapter = channelAdapter
+
+        messageAdapater = MessageAdapter(this, MessageService.messages)
+        messageListView.adapter = messageAdapater
+        val layoutManager = LinearLayoutManager(this)
+        messageListView.layoutManager = layoutManager
     }
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -92,14 +102,10 @@ class MainActivity : AppCompatActivity() {
         if(App.prefs.isLoggedIn){
             AuthService.findUserByEmail(this){}
         }
-    }
 
-    override fun onResume() {
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver,
             IntentFilter(BROADCAST_USER_DATA_CHANGE)
         )
-
-        super.onResume()
     }
 
     override fun onDestroy() {
@@ -137,8 +143,9 @@ class MainActivity : AppCompatActivity() {
         if (selectedChannel != null){
             MessageService.getMessages(selectedChannel!!.id) { complete->
                 if (complete){
-                    for (message in MessageService.messages){
-                        println(message.message)
+                    messageAdapater.notifyDataSetChanged()
+                    if (messageAdapater.itemCount > 0){
+                        messageListView.smoothScrollToPosition(messageAdapater.itemCount - 1)
                     }
                 }
             }
@@ -154,12 +161,14 @@ class MainActivity : AppCompatActivity() {
         if (App.prefs.isLoggedIn){
             //logout
             UserDataService.logout()
+            channelAdapter.notifyDataSetChanged()
+            messageAdapater.notifyDataSetChanged()
             userNameNavHeader.text = "Please Login"
             userEmailNavHeader.text = ""
             userImageNavHeader.setImageResource(R.drawable.profiledefault)
             userImageNavHeader.setBackgroundColor(Color.TRANSPARENT)
             loginBtnNavHeader.text = "Login"
-
+            mainChannelName.text = "Please Log in"
         }else{
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)
@@ -218,6 +227,8 @@ class MainActivity : AppCompatActivity() {
 
                     val newMessage = Message(msgBody,userName, channelId,userAvatar, userAvatarColor,id, timeStamp)
                     MessageService.messages.add(newMessage)
+                    messageAdapater.notifyDataSetChanged()
+                    messageListView.smoothScrollToPosition(messageAdapater.itemCount - 1)
                 }
             }
         }
